@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PhotoController;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
@@ -21,9 +22,18 @@ class Service {
 
 }
 
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+
+//////////////// ANCHOR - 
 
 Route::get('/demo', function(Service $service) {
     exit($service::class);
@@ -55,17 +65,17 @@ Route::get('psr', function(ContainerInterface $container) {
     // 
 });
 
-Route::post();
-Route::put();
-Route::patch();
-Route::delete();
-Route::options();
+// Route::post();
+// Route::put();
+// Route::patch();
+// Route::delete();
+// Route::options();
 
-Route::match(['get', 'post'], '/', function() {});
-Route::any('/', function() {});
+// Route::match(['get', 'post'], '/', function() {});
+// Route::any('/', function() {});
 
-Route::redirect('/', 301);
-Route::permanentRedirect('/');
+// Route::redirect('/', 301);
+// Route::permanentRedirect('/');
 Route::view('view', 'welcome', ['name'=> 'TDam']);
 Route::get('/{meo}', function($meo) {});
 Route::get('/{optionnal?}', function(?string $optional) {});
@@ -75,3 +85,31 @@ Route::controller(['controller'])->group(function() {});
 Route::middleware(['middleware'])->group(function() {});
 Route::domain('example.com.vn')->group(function() {});
 Route::prefix('prefix')->name('');
+
+Route::fallback(function() {
+    //
+});
+
+Route::middleware(['throttle:uploads'])->group(function() {
+    Route::post('/video', function() {
+
+        $route = Route::current();
+        $name = Route::currentRouteName();
+        $action = Route::currentRouteAction();
+
+    });
+});
+
+Route::get('check_token', function() {})->middleware('token');
+Route::middleware('token')->group(function() {  
+    Route::get('/', function() {});
+    Route::get('/profile', function() {})->withoutMiddleware('token');
+});
+
+Route::put('/post/{id}', function(string $id) {})->middleware('role:editor,publisher');
+
+
+Route::get('crsf_token_request', function(Request $request) {
+    $token = $request->session->token();
+    $token = csrf_token();
+});

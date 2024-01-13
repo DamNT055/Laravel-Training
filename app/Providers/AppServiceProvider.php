@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\TerminatingMiddleware;
 use Illuminate\Support\ServiceProvider;
 use App\Providers\SimpleProvider;
 use App\Providers\HardProvider;
@@ -22,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(TerminatingMiddleware::class);
     }
 
     /**

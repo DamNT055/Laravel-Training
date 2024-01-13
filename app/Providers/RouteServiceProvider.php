@@ -28,6 +28,31 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        RateLimiter::for('global', function(Request $request) {
+            return Limit::perHour(100)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('global', function(Request $request) {
+            return Limit::perMinute(1000)->response(function(Request $request, array $header) {
+                return response('Custom response...', 429, headers: $header);
+            });
+        });
+
+        RateLimiter::for('uploads', function(Request $request) {
+            return $request->user()->vipCustomer() ? Limit::none() : Limit::perMinute(100);
+        });
+        
+        RateLimiter::for('uploads', function(Request $request) {
+            return $request->user() ? Limit::perMinute(100)->by($request->user()->id) : Limit::perMinute(10)->by($request->ip());
+        });
+
+        RateLimiter::for('login', function(Request $request) {
+            return [
+                Limit::perMinute(500),
+                Limit::perMinute(5)->by($request->input('mail'))
+            ];
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
@@ -38,5 +63,6 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::pattern('id','[0-9]+');
+
     }
 }
