@@ -20,4 +20,21 @@ class SimpleController extends Controller {
         $response = $this->get('/');
         $response->assertSee('value');
     }
+
+    public function named_argument($var1, $var2):void {
+        echo $var1, $var2;
+    }
+
+    public function test_named_arg():User {
+        $this->named_argument(var1: 5, var2: 7);
+
+        return new User();
+    }    
+
+    public function route() {
+        $route = route('/');
+        redirect()->route('demo');
+        to_route('demo');
+        route('variable', ['id' => 1]);
+    }
 }

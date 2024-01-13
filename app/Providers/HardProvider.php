@@ -2,4 +2,9 @@
 
 namespace App\Providers; 
 
-class HardProvider {}
+use App\Service\SimpleServices;
+use App\Service\HardService;
+
+class HardProvider {
+
+}

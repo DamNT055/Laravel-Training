@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\PhotoController;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
+use Psr\Container\ContainerInterface;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,3 +49,29 @@ Route::get('facade_helper', function() {
 Route::get('cache', function() {
     return cache('key');
 });
+
+Route::get('psr', function(ContainerInterface $container) {
+    $service = $container->get(PhotoController::class);
+    // 
+});
+
+Route::post();
+Route::put();
+Route::patch();
+Route::delete();
+Route::options();
+
+Route::match(['get', 'post'], '/', function() {});
+Route::any('/', function() {});
+
+Route::redirect('/', 301);
+Route::permanentRedirect('/');
+Route::view('view', 'welcome', ['name'=> 'TDam']);
+Route::get('/{meo}', function($meo) {});
+Route::get('/{optionnal?}', function(?string $optional) {});
+Route::get('/{regex}', function(string $name) {})->where('name', '[A-Za-z]+')->whereNumber('name');
+
+Route::controller(['controller'])->group(function() {});
+Route::middleware(['middleware'])->group(function() {});
+Route::domain('example.com.vn')->group(function() {});
+Route::prefix('prefix')->name('');

@@ -26,8 +26,6 @@ class SimpleProvider extends ServiceProvider
      */
     public function boot(ResponseFactory $response): void
     {
-        $response->make('serialized', function(mixed $value) {
-
-        });
+        $response->make('serialized', function(mixed $value) {});
     }
 }
