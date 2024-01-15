@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\HardController;
 use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\ResourceController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Psr\Container\ContainerInterface;
@@ -113,3 +117,59 @@ Route::get('crsf_token_request', function(Request $request) {
     $token = $request->session->token();
     $token = csrf_token();
 });
+
+Route::get('invoke', HardController::class);
+
+Route::resource('resource', ResourceController::class);
+
+Route::resources([
+    'post' => ResourceController::class,
+    'source' => HardController::class
+]);
+
+Route::resource('resource2', ResourceController::class)->missing(function (Request $request) {
+    return Redirect::route('home.index'); 
+});
+
+#index, create, store, show, edit, update, destroy 
+Route::resource('soft-delete', ResourceController::class)->withTrashed();
+Route::resource('soft-delete-show', ResourceController::class)->withTrashed(['show']);
+
+Route::resource('photos', ResourceController::class)->only(['index', 'show']);
+Route::resource('photos', ResourceController::class)->except(['create', 'store', 'update', 'destroy']);
+
+Route::apiResource('photos', ResourceController::class);
+Route::apiResources([
+    'photos' => ResourceController::class,
+    'video' => ResourceController::class
+]);
+
+
+// photos/{photo}/comments/{comment}
+Route::resource('photos.comments', ApiController::class);
+Route::resource('photos.comments', ApiController::class)->shallow();
+
+Route::resource('photo', ApiController::class)->names([
+    'create' => 'photo.create'
+]);
+
+# photos/{one_img}
+Route::resource('photos', ApiController::class)->parameters([
+    'photos' => 'one_img'
+]);
+
+# photos/{photo}/comments/{comment:slug}
+Route::resource('photos.comments', ApiController::class)->scoped([
+    'comment' => 'slug'
+]);
+
+
+Route::get('photos/popular', [ApiController::class, 'popular']);
+Route::resource('photos', ApiController::class);
+
+Route::singleton('photos.thumbnail', ApiController::class);
+Route::singleton('photos', ApiController::class)->creatable();
+Route::singleton('photos', ApiController::class)->destroyable();
+
+Route::apiSingleton('photos', ApiController::class);
+Route::apiSingleton('photos', ApiController::class)->creatable();
