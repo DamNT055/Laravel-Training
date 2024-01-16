@@ -4,13 +4,16 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\HardController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 /*
 |--------------------------------------------------------------------------
@@ -173,3 +176,41 @@ Route::singleton('photos', ApiController::class)->destroyable();
 
 Route::apiSingleton('photos', ApiController::class);
 Route::apiSingleton('photos', ApiController::class)->creatable();
+
+Route::get('resp', function() {
+    $type = 'application/json';
+    response('Success', 200)->header('Content-type', 'application/json');
+    response('Ok', 200)->withHeaders([
+        'Content-type' => $type,
+        'X-Header-One' => 'one'
+    ]);
+});
+
+Route::middleware('cache.headers:public;max_age=262800;etag')->group(function() {
+    Route::get('privacy', function() {});
+    Route::get('cert', function() {
+    });
+});
+
+Route::get('cookies', function() {
+    $minutes = 10;
+    return response('OK', 200)->cookie('name', 'value', $minutes);
+    Cookie::queue('name', 'value', $minutes);
+
+    $cookie = cookie('name', 'value', $minutes);
+    return response('Respon')->withoutCookie('name');
+    Cookie::expire('name');
+});
+
+Route::get('back', function() {
+    return back()->withInput();
+    redirect()->route('home.index', ['name'=>'LiLy']);
+    redirect()->action([UserController::class, 'index'], ['user_1' => 'Mike']);
+    redirect()->away('www.google.com');
+});
+
+Route::post('flash', function() {
+    return redirect()->route('dashboard')->with('status', 'Profile Update');
+    
+    return back()->withInput();
+});

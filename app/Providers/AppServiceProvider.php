@@ -9,6 +9,8 @@ use App\Providers\SimpleProvider;
 use App\Providers\HardProvider;
 use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
@@ -41,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
         });
         ConvertEmptyStringsToNull::skipWhen(function(Request $request) {
             // ...
+        });
+
+        Response::macro('caps', function(string $s) {
+            return FacadesResponse::make(strtoupper($s));
         });
     }
 }
